@@ -64,7 +64,7 @@ deckDictEx = {
 	"Communism":2,       # Two player exchange cards to be equal, opponent have >= you
 }
 
-deckStd = []
+deckStd = ({},)
 
 class Deck(object):
 	"""

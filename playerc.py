@@ -6,8 +6,11 @@ class Player(object):
 		self.name = name
 		print(self.name, self.deck)
 
-	def draw(self, cards):
+	def draw(self, cards) -> None:
 		self.deck += cards
+
+	def play(self, cardIndex) -> str: # Start index from 1
+		return self.deck.pop(max(0,min(cardIndex-1,len(self.deck)-1)))
 
 class PlayerErr(Exception):
 	...

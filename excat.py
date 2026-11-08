@@ -18,6 +18,7 @@ term = Terminal()						  # Create terminal
 running = 1 							  # Init running
 players = {}
 drawDeck = object
+usedDeck = object
 
 def gameEnd():
 	cprint(f"{time.time()-startTime:.2f}")
@@ -37,8 +38,9 @@ def gameInit(bomb = 10, ww2=1, coldwar=1, addDefuse=3):
 	if addDefuse: addDeck |= {"Defuse":addDefuse}
 
 	# Add to deck
-	global drawDeck
+	global drawDeck, usedDeck
 	drawDeck = Deck((deckDictStd, addDeck))
+	usedDeck = Deck(name="usedDeck")
 
 	# Player setup
 	global players
@@ -66,7 +68,7 @@ def excatcli():
 				cprint(line + term.clear_eol, (255,65,0))
 
 			# Deck
-			print(drawDeck.check(prt=False))
+			print(drawDeck.check(prt=False)+term.clear_eol)
 
 			# Player index
 			for index, player in enumerate(players.keys()):
@@ -80,21 +82,39 @@ def excatcli():
 						break
 					elif key.name == "KEY_BACKSPACE":
 						userInput = userInput[:-1]
+
+					# History
 					elif key.name == "KEY_UP":
 						historyIndex = min(10,historyIndex+1)
 						userInput = queue[-historyIndex]
 					elif key.name == "KEY_DOWN":
 						historyIndex = max(0,historyIndex-1)
 						userInput = queue[-historyIndex]
-					elif key.name == "KEY_ENTER":
-						queue.append(userInput)
+
+					# Cursor Index
+					elif key.name == "KEY_LEFT":
+						...
+					elif key.name == "KEY_UP":
+						...
+
+					elif key.name == "KEY_ENTER": # Run command
+						# Make args and clear
 						args = userInput.split()
-						if userInput == "exit":
+						if args[0] != "":
+							queue.append(userInput)
+						userInput = ""
+
+						# Exit & Restart
+						if args[0] == "exit":
 							exit()
-						if userInput == "re": # Auto restart code
+						elif args[0] == "re": # Auto restart code
 							global restart
 							restart = True
 							exit()
+						if args[0] == "cls":
+							queue += [""]*10
+
+						# Play
 						elif args[0] == "draw":
 							# Draw card or discard
 							if len(args) == 1: # Discard
@@ -104,16 +124,23 @@ def excatcli():
 								players[args[1]].draw(drawDeck.drawFrom())
 						elif args[0] == "check":
 							# Check draw deck
-							if len(args) == 1:
-								queue.append(drawDeck.check(prt=0))
+							if len(args) == 1 or args[1] == "used":
+								if args[1] == "used":
+									queue.append(usedDeck.check(prt=0))
+								else:
+									queue.append(drawDeck.check(prt=0))
 							else:
 								checkPlayerExist(players, args[1])
 								queue.append(str(players[args[1]].deck.copy())) # Copy so it don't update every check
-						userInput = ""
+						elif args[0] == "play":
+							checkPlayerExist(players, args[2])
+							cardPlay = players[args[2]].play(int(args[1]))
+							queue.append(cardPlay)
+
 					elif not key.is_sequence: # Valid chr
 						userInput += key
 			except Exception as Err:
-				userInput = ""
+				userInput = "" # Force clear user input
 				queue.append(f"Err: {Err}")
 
 			# Cursor

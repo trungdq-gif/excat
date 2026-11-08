@@ -20,6 +20,7 @@ git clone https://github.com/trungdq-gif/excat
 | Chang player into another file  |      |
 | Set mode for cli and normal     |      |
 | Change naming system for player |      |
+| Add usedDeck                    |      |
 
 
 # 3	Roadmap
