@@ -129,13 +129,16 @@ class Deck(object):
 		}
 		addCards(deckBombs, shuffle=True)
 
-	def check(self, cardCheck=5) -> None:
+	def check(self, cardCheck=5, prt=1) -> None:
 		"""
 		check(cardCheck) -> None
 			- Name
 			- Len deck
 			- Upper cards
 		"""
-		print("<", self.name, len(self.deck), ">")
-		for index, card in enumerate(self.deck[:cardCheck]):
-			print(index + 1, ">", card)
+		if prt:
+			print("<", self.name, len(self.deck), ">")
+			for index, card in enumerate(self.deck[:cardCheck]):
+				print(index + 1, ">", card)
+		else:
+			return f"{self.name}, Left:{len(self.deck)}, {self.deck[:cardCheck]}"
