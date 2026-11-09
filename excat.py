@@ -7,19 +7,19 @@ import time
 import sys
 import os
 
-
+# Change working directory to this folder
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 from excatLib.playerc import Player, PlayerErr, checkPlayerExist
 from excatLib.deck import Deck, deckDictStd
 
-
-startTime = time.time()
-restart = 0
+# INIT value
+startTime = time.time()					  # Program start time
+restart = 0 							  # Reset mode
 greet = figlet_format("Exploding Kitten") # Cli header
 term = Terminal()						  # Create terminal
 running = 1 							  # Init running
-players = {}
-drawDeck, usedDeck = object, object
+players = {}							  # Players
+drawDeck, usedDeck = object, object		  # Decks
 
 
 # This function show info at the end 
@@ -48,9 +48,9 @@ def gameInit(bomb = 10, ww2=1, coldwar=1, addDefuse=3):
 
 	# Player setup
 	global players
-	players["Host"] = Player(host=True,deck=drawDeck.drawFrom(5))
+	players["host"] = Player(host=True,deck=drawDeck.drawFrom(5))
 	for i in range(1,5):
-		playerName=f"No.{i}"
+		playerName=f"no.{i}"
 		players[playerName] = Player(deck=drawDeck.drawFrom(5), name=playerName)
 	drawDeck.check()
 
@@ -126,8 +126,9 @@ def excatcli():
 							else:
 								checkPlayerExist(players, args[1])
 								players[args[1]].draw(drawDeck.drawFrom())
+						
+						# Check draw deck
 						elif args[0] == "check":
-							# Check draw deck
 							if len(args) == 1 or args[1] == "used":
 								if args[1] == "used":
 									queue.append(usedDeck.check(prt=0))
@@ -136,9 +137,19 @@ def excatcli():
 							else:
 								checkPlayerExist(players, args[1])
 								queue.append(str(players[args[1]].deck.copy())) # Copy so it don't update every check
+						
+						elif args[0] == "change":
+							checkPlayerExist(players, args[1]) # Who change
+							checkPlayerExist(players, args[2]) # Who change to
+							
+							cardMove = players[args[1]].change(int(args[3]),changeTo=players[args[2]])
+							
+							# Play the card and push it to used deck
+							queue.append(cardMove)
+
 						elif args[0] == "play":
-							checkPlayerExist(players, args[2])
-							cardPlay = players[args[2]].play(int(args[1]))
+							checkPlayerExist(players, args[1]) # Who play this card
+							cardPlay = players[args[1]].push(int(args[2]))
 							queue.append(cardPlay)
 
 					elif not key.is_sequence: # Valid chr
