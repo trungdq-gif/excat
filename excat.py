@@ -7,19 +7,22 @@ import time
 import sys
 import os
 
-from playerc import Player, PlayerErr, checkPlayerExist
-from deck import Deck, deckDictStd
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+from excatLib.playerc import Player, PlayerErr, checkPlayerExist
+from excatLib.deck import Deck, deckDictStd
+
+
 startTime = time.time()
 restart = 0
 greet = figlet_format("Exploding Kitten") # Cli header
 term = Terminal()						  # Create terminal
 running = 1 							  # Init running
 players = {}
-drawDeck = object
-usedDeck = object
+drawDeck, usedDeck = object, object
 
+
+# This function show info at the end 
 def gameEnd():
 	cprint(f"{time.time()-startTime:.2f}")
 
@@ -29,6 +32,7 @@ def gameEnd():
 		# os.execv(sys.argv[0], [sys.executable] + sys.argv) # Self-restart
 atexit.register(gameEnd)
 
+# INIT game (add cards, add players)
 def gameInit(bomb = 10, ww2=1, coldwar=1, addDefuse=3):
 	""""""
 	# Card set up
